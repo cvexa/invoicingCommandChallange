@@ -30,11 +30,11 @@ class CalcController extends Controller
         if(!$this->setData($temp_path . $fileRealName, $data['customer'])){
             return redirect()->back()->withErrors(['Requested VAT doesn"t exists in the document']);
         }
-        if(!$this->validateCurrencies($data['outputCurrency'])){
-            return redirect()->back()->withErrors(['Requested output currency its not supported']);
-        }
         if(!$this->setCurrencies($request->currencies)){
             return redirect()->back()->withErrors(['Requested currencies are not in the right format please use CUR:NUM,']);
+        }
+        if(!$this->validateCurrencies($data['outputCurrency'])){
+            return redirect()->back()->withErrors(['Requested output currency its not supported']);
         }
         $this->calcTotal($data['outputCurrency']);
 
@@ -46,7 +46,8 @@ class CalcController extends Controller
     //if requested output currency is not one of the currencies in the document
     public function validateCurrencies($expectedCurrency)
     {
-        if(in_array($expectedCurrency,$this->possibleCurrencies)){
+        $settedCurrencies = array_keys($this->currencies);
+        if(in_array($expectedCurrency,$settedCurrencies)){
             return true;
         }
         return false;
